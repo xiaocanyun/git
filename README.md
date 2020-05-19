@@ -135,8 +135,10 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    # 可使用如下代替
    mkdif xxx # xxx 是目录
    git init # 初始化
-   git remote add {branch-name} https://github.com/xiaocanyun/pangu.git # 添加某远程仓库
+   git remote add origin https://github.com/xiaocanyun/pangu.git # 添加某远程仓库
+   可使用 git push/pull/fetch  origin master 推送\拉取
    ```
+   
 
    **最多在检出使用checkout任何时候都不要再使用**
 
