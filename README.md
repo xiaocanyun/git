@@ -436,7 +436,6 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    # 这里的马上，是指 在 reset 后没有再执行 git add ，因为 add 了会改变暂存区
    ```
 
-   
 
 2. --mixed(默认) 将版本库（HEAD）和暂存区，不会修改工作区
 
@@ -459,8 +458,7 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    # push生效
    ```
 
-   
-
+  
 #### revert 重写 - 版本库
 
  其作用是创建新的提交来弥补之前提交的错误
@@ -502,9 +500,6 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    git revert --continue
    # 此时提交 ，即变成 2 的时候的
    ```
-
-
-
 
 ####  stash 临时存储  
 
@@ -652,9 +647,8 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    git commit -m ""
    # 重新在本分支执行一次提交即可
    # 因为将合并过来的只加入了工作区和暂存区
-   # 可以通过   git restore --staged .   及     git restore . 取消
-   
-```
+   # 可以通过   git restore --staged .   及     git restore . 取消 
+   ```
    
   
 #### cherry-pick  略，不建议使用
@@ -671,4 +665,24 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
 * 发布
 
 其他不再详述。
+
+### tag
+
+1. 打tag
+ ```shell
+ git tag -a v0.1 -m "version 0.1 released" 1094adb
+ # -a 指定标签名  可略
+ # -m 指定说明文字  可略
+ # 1094adb 从哪个 commitid 打tag  如果略了，就是当前最新 commit
+ # 可使用 git log --oneline 查看历史 commit
+ ```
+
+2. 查看tag
+ 
+ ```shell
+ git tag  # 查看所有标签
+ git show v0.1  # 查看 标签信息
+ 
+ ```
+
 
