@@ -122,6 +122,33 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 ### 核心操作
 
+
+#### config 配置
+
+1. 设置用户名和邮件地址
+
+  ```shell
+  git config user.name 'xxxx'
+  git config user.email 'xx@x.x'
+  
+  # 可带参数 
+   --global              use global config file
+   --system              use system config file
+   --local               use repository config file
+   --worktree            use per-worktree config file
+   优先级逐渐变高
+   
+   git config --local -l 查看仓库配置
+  ```
+
+2. 使用http连接，需要每次输入密码
+
+  ```shell
+  git config --global credential.helper store --file ~/.my-credentials
+  # --file ~/.my-credentials 表示存储的地址 ， 可以不加，会自动存储在这个默认的目录、文件
+  ```
+
+
 #### branch 本地分支
 
 1. 检出
@@ -192,8 +219,6 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    ```
 
    
-
-
 
 #### remote 远程分支
 
@@ -294,7 +319,6 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    git status  # 查看当前工作区与暂存区的差异
    ```
 
-   
 
 ####  log 日志
 
@@ -315,7 +339,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    **注意显示的是 commit log ， 因为合并产生的 log 也在其中 **
    
    ```shell
-git log --graph --decorate --oneline --all
+   git log --graph --decorate --oneline --all
    # --decorate： 标记会让git log显示每个commit的引用
    # --oneline： 一行显示
    # --graph   点线图
@@ -331,15 +355,6 @@ git log --graph --decorate --oneline --all
    ```
    
    
-   
-   
-   
-   
-   
-   
-   
-   
-   
 3. 查看操作日志
 
    ```shell
@@ -347,7 +362,6 @@ git log --graph --decorate --oneline --all
    ```
 
    
-
 #### fetch 本地更新
 
 不赞成使用  pull
@@ -599,12 +613,9 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
 
 2.  rebase 有很多参数， -i 进入交互式环境可以操作
 
-   
-
    在本分支。提交了很多代码，然后需要合并其他分支的代码的时候。
 
    可以再次对本次提交的代码进行 多次提交的合并（这个用于当需要将本地开发分支提交到 开发主分支 dev）
-
    
 
    ```shell
@@ -645,13 +656,8 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    
 ```
    
-   
-
-
-
+  
 #### cherry-pick  略，不建议使用
-
-
 
 
 
