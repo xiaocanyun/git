@@ -26,8 +26,6 @@
 
 Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存在一个主分支master，它是所有其他分支的"上游"。只有上游分支采纳的代码变化，才能应用到其他分支。
 
-
-
 ### 工具
 
 推荐  <https://www.sourcetreeapp.com/> 、<https://www.gitkraken.com/>(这个谁来试试，据说完美得狠 ，但私库收费)
@@ -46,25 +44,24 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 基础学习建议看：<https://www.liaoxuefeng.com/wiki/896043488029600/898732864121440>  但里面关于 有些是过时的。请参考本文档使用
 
-
-
 ### 问题
 
 如果发现本文档描述的，与实际使用不同的地方。请告知，我做相应处理。
 
-
-
-
-
 ### 持续发布
 
-![img](http://www.ruanyifeng.com/blogimg/asset/2015/bg2015122306.png)
+
+
+![gitflow.png](E:\Git\git\img\gitflow.png)
 
 #### 核心点
 
-*  master 为核心开发分支
-*  master 是核心受保护分支
+* master 为核心开发分支
+
+* master 是核心受保护分支
+
 * 一切开发围绕master
+  
   1. master 最新（除本地）
   2. 开发者不能直接操作 master 、pre-production 、 production
   3. 新的开始均从 master 拉取自己的本地分支，一般  feature-xxx 、 fix-xxx 、 开发自己创建并推送远程
@@ -74,10 +71,10 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
   7. 发布从   pre-production 合并到 production ，打上 tag ，完成上线
 
 * 必须遵循 fix 、feature ——> master ——> pre-production ——> production （视情况 pre 可略）
+
 * 适当情况可取消 pre-production 
+
 * production  发布必须打 tag
-
-
 
 #### 分支管理
 
@@ -92,46 +89,105 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 ### 核心概念
 
-#### 三个区
+#### 三大分区区
+
+   
+
+![gitstep.jpg](./img/gitstep.jpg)
 
 * Working Tree 当前的工作区域
 
-* Index/Stage 暂存区域，和git stash命令暂存的地方不一样。使用git add xx，就可以将xx添加近Stage里面，真正保存文件
+* Index/Stage 暂存区域，和git stash命令暂存的地方不一样。使用 `git add` xx，就可以将xx添加近Stage里面，真正保存文件
 
-* Repository 提交的历史，即使用git commit提交后的结果，引用地址
+* Repository 提交的历史，即使用 `git commit` 提交后的结果，引用地址
+  
+  另外还有 Remote 远程仓库
+
+#### 四大状态
+
+三分区对应四大状态
+
+*  untrack   新建；  `git add`命令来track它
+
+* modified  修改或者新增；通过 `git status` 查看，new file 新增，modified 修改
+
+* staged  暂存； 通过 `git add `后的文件
+
+* committed 提交； `git commit` 提交本地
+  
+  另外 git push 提交到远程仓库
+
+
+
+#### 重要文件
+
+* config 文件： 就是一些配置
+
+* HEAD 文件：  指向当前正在工作的分支，此时任何 commit，默认自动附加到 指定分支之上
+
+* logs/ 文件夹： 记录了每次的日志，`git reflog` 需要
+
+*  hooks/ 文件夹：用于在 git 命令前后做检查或做些自定义动作
+  
+  ```textile
+  prepare-commit-msg.sample  # git commit 之前，编辑器启动之前触发，传入 COMMIT_FILE，COMMIT_SOURCE，SHA1
+  commit-msg.sample          # git commit 之前，编辑器退出后触发，传入 COMMIT_EDITMSG 文件名
+  pre-commit.sample          # git commit 之前，commit-msg 通过后触发，譬如校验文件名是否含中文
+  pre-push.sample            # git push 之前触发
+  
+  pre-receive.sample         # git push 之后，服务端更新 ref 前触发
+  update.sample              # git push 之后，服务端更新每一个 ref 时触发，用于针对每个 ref 作校验等
+  post-update.sample         # git push 之后，服务端更新 ref 后触发
+  
+  pre-rebase.sample          # git rebase 之前触发，传入 rebase 分支作参数
+  applypatch-msg.sample      # 用于 git am 命令提交信息校验
+  pre-applypatch.sample      # 用于 git am 命令执行前动作
+  fsmonitor-watchman.sample  # 配合 core.fsmonitor 设置来更好监测文件变化
+  ```
+
+* objects/ 文件夹:  Git的数据库
+  
+  1.  pack 文件夹：  里面有  .pack 存储的自定义 `packfile` 的二进制格式，zlib压缩的文件数据   .idx 是索引文件。
+  
+  2. 很多两位字符的文件：对象的SHA1哈希值的前两位是文件夹名称，后38位作为对象文件名
+
+* COMMIT_EDITMSG 文件：  最后一次提交的  message
+
+* index 文件， 暂存文件存放，是一个二进制文件
+
+* fefs/ 文件夹 ： 一般包括三个子文件夹，`heads`、`remotes`和 `tags `
+  
+  1. `refs/heads/` 文件夹内的 `ref` 一般通过 `git branch` 生成。`git show-ref --heads` 可以查看。
+  
+  2. `refs/tags/` 文件夹内的 `ref` 一般通过 `git tag` 生成。`git show-ref --tags` 可以查看。
 
 #### 分支
 
 * 远程分支
-
+  
   在远程仓库中的分支，就是像本地分支一样的普通分支，只不过是在远程仓库里
 
 * 远程跟踪分支
-
+  
   本地仓库中用来代表远程分支的本地分支，它是只读的，只是表示远程分支的状态，本地不可修改
 
 * 跟踪分支
-
+  
   已跟踪了远程跟踪分支的本地分支，可以通过pull和push命令快捷地获取合并数据和推送数据
 
 远程跟踪分支 是 跟踪分支 与 远程分支 之间的跟踪桥梁
 
-
-
-
-
 ### 核心操作
-
 
 #### config 配置
 
 1. 设置用户名和邮件地址
-
-  ```shell
-  git config user.name 'xxxx'
-  git config user.email 'xx@x.x'
-  
-  # 可带参数 
+   
+   ```shell
+   git config user.name 'xxxx'
+   git config user.email 'xx@x.x'
+   
+   # 可带参数 
    --global              use global config file
    --system              use system config file
    --local               use repository config file
@@ -139,22 +195,21 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    优先级逐渐变高
    
    git config --local -l 查看仓库配置
-  ```
+   ```
 
 2. 使用http连接，需要每次输入密码
-
-  ```shell
-  git config --global credential.helper store --file ~/.my-credentials
-  # --file ~/.my-credentials 表示存储的地址 ， 可以不加，会自动存储在这个默认的目录、文件
-  ```
-
+   
+   ```shell
+   git config --global credential.helper store --file ~/.my-credentials
+   # --file ~/.my-credentials 表示存储的地址 ， 可以不加，会自动存储在这个默认的目录、文件
+   ```
 
 #### branch 本地分支
 
 1. 检出
-
-   **不推荐使用checkout，因为checkout 是危险的**
-
+   
+   **不推荐使用checkout，因为 checkout 是危险的**
+   
    ```shell
    git checkout https://github.com/xiaocanyun/rebase.git
    # 完整的检出目标仓库
@@ -165,12 +220,11 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    git remote add origin https://github.com/xiaocanyun/pangu.git # 添加某远程仓库
    可使用 git push/pull/fetch  origin master 推送\拉取
    ```
-   
 
-   **最多在检出使用checkout任何时候都不要再使用**
+   **最多在检出使用 checkout 任何时候都不要再使用**
 
 2. 创建分支
-
+   
    ```shell
    git branch xxx
    # 不建议使用  git checkout -b $issue-feature-name  创建并切换 （该命令以后可能不能使用）
@@ -178,14 +232,14 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    ```
 
 3. 切换
-
-   ````shell
+   
+   ```shell
    git switch xxx 
    # 从当前分支切换到 xxx 分支
-   ````
+   ```
 
 4. 推送
-
+   
    ```shell
    git push origin dev
    # 推送到远程 分支
@@ -194,7 +248,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    ```
 
 5. 删除
-
+   
    ```shell
    git branch -d  ${branch-name}
    # 删除本地分支
@@ -205,42 +259,36 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 提交只会对本地当前分支产生作用
 
 1. 直接提交
-
+   
    ```shell
    git commit  -m "你的注释"
    ```
 
-   
-
 2. 修改最后一次提交
-
+   
    ```shell
    git 
    ```
-
-   
 
 #### remote 远程分支
 
 远程分支
 
 1. 查看当前远程仓库
-
+   
    ```shell
    git remote  -v  # 查看关联的所有的远程仓储名称及地址
    git remote  #查看所有的远程仓储名称
    ```
 
-   
-
 2. 添加远程分支
-
+   
    本地建立一个远程分支的记录 与分支没关系 
-
+   
    如果在 git push 使用 -u 则就默认给当前分支绑定一个远程分支，以后就可以不输入远程名称
-
+   
    **不建议使用 -u 自己指定远程更清晰**
-
+   
    ```shell
    git remote add  {branch_name} https://github.com/xxxs.git
    # 创建跟踪关系
@@ -250,92 +298,86 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    # 这个可以通过  TODO 来避免
    ```
 
-3.    -u 详解 **谨慎使用**
-
-   如果使用了 -u 会有如下效果，自动绑定一个，如果没有就不会默认绑定一个，每次fetch、push需要输入
-
-   根目录的 .git/ 目录下，config
-
-   ```
-      [branch "master"]
-      	remote = origin
-      	merge = refs/heads/master
-      [branch "test"]
-      	remote = origin
-      	merge = refs/heads/test
-   ```
-
+3. -u 详解 **谨慎使用**
    
+   如果使用了 -u 会有如下效果，自动绑定一个，如果没有就不会默认绑定一个，每次fetch、push需要输入
+   
+   根目录的 .git/ 目录下，config
+   
+   ```
+   [branch "master"]
+       remote = origin
+       merge = refs/heads/master
+   [branch "test"]
+       remote = origin
+       merge = refs/heads/test
+   ```
 
 4. 删除远程仓库
-
+   
    **谨慎操作**
-
+   
    ```shell
    git remote remove ${branch-name}
    ```
 
-   
-
-#### diff 比较 
+#### diff 比较
 
 1. 比较工作区与暂存区
-
+   
    ```shell
    git diff           # 查看工作区和暂存区的区别； 后面可跟文件
    ```
 
 2. 比较暂存区与本地仓库(已 commint)
-
+   
    ```shell
    git diff --cached  # 查看暂存区和上次提交的区别； 后面可跟文件  
    ```
 
-   
-
 #### rm 删除
 
 1. 删除工作区和暂存区
-
+   
    ```shell
    git rm 文件     # 删除暂存区、和当前工作区的某个文件
    ```
 
 2. 只删除暂存区
-
+   
    ```shell
    git rm --cached 文件   #  只删除暂存区的文件
    ```
 
 3. 删除本地仓库
-
+   
    见  rest
 
 #### statu 状态
 
 1. 查看当前工作区状态
-
+   
    ```shell
    git status  # 查看当前工作区与暂存区的差异
    ```
 
-
-####  log 日志
+#### log 日志
 
 注意事项 **核心是指针**
 
 * 比如 master 提交了很多，然后从 master 创建 branch ，branch 查看log  会有master的历史
+
 * 如果将 branch ，merge 到 master 那么 master 也会有 branch 的 commit log 
+
 * 针对上一条，如果不想要 branch 的明细  commit log。 那么合并到 master 使用 rebase 
-
 1. 查看当前分支 commit 日志
-
+   
    ```shell
    git log  # 查看当前分支的 commit 的历史日志
    ```
 
 2. 详细日志，时间轴, 以 当前分支 为主线线上
-
+   
    **注意显示的是 commit log ， 因为合并产生的 log 也在其中 **
    
    ```shell
@@ -353,34 +395,32 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    /表示分叉
    \表示合入
    ```
-   
-   
-3. 查看操作日志
 
+3. 查看操作日志
+   
    ```shell
    git reflog  # 查看当前分支 的 操作历史
    ```
 
-   
 #### fetch 本地更新
 
 不赞成使用  pull
 
 1. 拉取远程 fetch
-
+   
    ```shell
    git fetch origin master # 从 远程 origin，分支 master 拉取最新到远程跟踪分支
    ```
 
 2. 查看差异
-
+   
    ```shell
    git log -p dev.. origin/dev 
    # 查看本地 dev  和 远程跟踪仓库 orgin/dev 的 commit 差异
    ```
 
 3. 合并 
-
+   
    ```shell
    git merge origin/dev
    # 把 origin/master 分支合并到当前分支
@@ -392,7 +432,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 #### restore  工作区、暂存区
 
 1. 将工作空间恢复到暂存状态
-
+   
    ```shell
    git restore  文件   #  指定路径或者文件
    # 只有已经 add 到暂存的才会
@@ -400,7 +440,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    ```
 
 2. 将暂存区 恢复到 最后的提交状态，工作区不受影响
-
+   
    ```shell
    git restore --staged 文件  # 指定路径或者文件
    # 相当于取消之前 add 到暂存区的， 本地文件不会受影响
@@ -410,47 +450,42 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    ```
 
 3. 将本地未提交的清除，即将工作区和暂存区都变更为指定的提交版本
-
+   
    **基本上push都会冲突**
-
+   
    ```shell
    git reset --hard HEAD # HEAD 可指定 commit id
    # --hard还告诉Git也一并覆盖工作区的所有改动
    # 工作区、暂存区 变更为 指定的版本
    # push生效
    ```
-
-   
 
 #### reset 重置 - 版本库（不使用）
 
 reset 会消除之前的log 和 reflog ，是永恒的撤销
 
 1. --soft  将 HEAD(版本库) 指向指定的 commit
-
+   
    ```shell
-   git reset --soft HEAD^  # 可是 commit id
+   git reset --soft HEAD^  # 可以是 commit id
    # 工作区 和 暂存区 不变
    # git log 查看，指定的 commit id 后面的 commit 丢失
    # 如果马上提交 git commit -m '' 将最新的暂存提交。达到的效果相当于删除commit id后的提交记录，把最新的新增一个记录(就是之前没操作 rest 时的最新记录)
    # 这里的马上，是指 在 reset 后没有再执行 git add ，因为 add 了会改变暂存区
    ```
 
-
 2. --mixed(默认) 将版本库（HEAD）和暂存区，不会修改工作区
-
+   
    ```shell
    git reset --mixed HEAD^ # 可是 commit id
    # git log 查看，指定的 commit id 后面的 commit 丢失
    # 暂存区已改变为与版本库一样
    ```
 
+3. --hard 将本地未提交的清除，即将工作区和暂存区都变更为指定的提交版本
    
-
-3.  --hard 将本地未提交的清除，即将工作区和暂存区都变更为指定的提交版本
-
    **可能会出现冲突**
-
+   
    ```shell
    git reset --hard HEAD # HEAD 可指定 commit id
    # --hard还告诉Git也一并覆盖工作区的所有改动
@@ -458,15 +493,14 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    # push生效
    ```
 
-  
 #### revert 重写 - 版本库
 
  其作用是创建新的提交来弥补之前提交的错误
 
 1. 撤销工作区到指定的版本
-
+   
    **可能会出现冲突**
-
+   
    ```shell
    git revert HEAD # HEAD 可使用 HEAD^ 或者使用 commint id 来指定
    # 会将工作区内容直接返回到 指定的 commit id 处，即变更了工作区,可能会和本地冲突
@@ -474,25 +508,25 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    # push 到远程
    # 其导致的结果是：1. 工作区恢复、2. commit 的 log 增加一个 3. 之前的任何操作记录不会变化
    ```
-
+   
    然后处理冲突，并提交，即增加新的提交来弥补之前错误的提交
 
 2. 强制结束 revert 产生的影响 --abort
-
+   
    如果使用了 git revert 来操作，但是不想继续。可使用 -- abort 来强制结束
-
+   
    ```shell
    git revert --abort
    ```
 
 3. 按顺序一步一步回滚，然后一起处理
-
+   
    如果提交了 1、2、3、4  但是其中第 2 处出现了问题，想修复
-
+   
    这样如果本地都是提交了的，那么顺序撤销，不会产生冲突
-
+   
    因为如果直接 git revert 2 。 很可能会冲突
-
+   
    ```shell
    git revert 4 --no-commit
    git revert 3 --no-commit
@@ -501,12 +535,12 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    # 此时提交 ，即变成 2 的时候的
    ```
 
-####  stash 临时存储  
+#### stash 临时存储
 
 需要临时 switch 到其他分支工作，但当前分支还不可用提交
 
-1.  stash list 查看当前存储列表(强烈建议每次只使用一次 存储，即 list 只有一条)
-
+1. stash list 查看当前存储列表(强烈建议每次只使用一次 存储，即 list 只有一条)
+   
    ```shell
    git stash list 
    # 查看 stash 列表  -p 可查看详细
@@ -516,9 +550,9 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    ```
 
 2. 存储当前分支环境
-
+   
    注意，必须当前工作区文件均要被 git 管理( 当然除了 .gitignore  )
-
+   
    ```shell
    git stash
    # 存储当前环境
@@ -532,9 +566,9 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    ```
 
 3. 还原临时存储
-
+   
    需要先切换到之前的分支
-
+   
    ```shell
    git switch xxx 
    # 切换到之前工作的分支(使用了临时存储的分支)
@@ -548,71 +582,67 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    # 上面两个可以带 stash 的标识，通过list 可查看(但是可能会冲突，故最好指暂存一次)
    
    git stash pop  # 恢复并删除最新的一个（栈结构）
-   
    ```
 
 4. 清除
-
+   
    **谨慎操作**
-
+   
    ```shell
    git stash clear
    # 清除当前所在分支本地创建的 stash
    ```
 
-
-
-####  合并 rebase  & merge
+#### 合并 rebase  & merge
 
 需要细致理解 rebase 与 merge 的差异
 
-*  本地开发分支合并父分支 使用 merge
-
+* 本地开发分支合并父分支 使用 merge
+  
   **对于分支开发者，可一直使用 merge**
 
 * 合并开发分支到父分支使用 rebase  变基
-
-  **受保护分钟合并，使用 rebase**
-
-  rebase 的含义就是以 指定的 branch 为基，来进行合并，会重数commit的时间线
-
+  
+  **受保护分支合并，使用 rebase**
+  
+  rebase 的含义就是以 指定的 branch 为基，来进行合并，会重置commit的时间线
+  
   也就是说，不按照正常的提交时间点进行合并，把所指分支当作当前分子基线。
 
 #### rebase 变基合并
 
-1.  rebase 变更分支的基、重树分支 commit log
-
+1. rebase 变更分支的基、重树分支 commit log
+   
    **一般情况不需要使用，强制工作中不使用**
+   
+   ```shell
+   比如 有 master 其  commit id
+   -- m1、m2、m3、m4、m5
+   branch 在 m3 处创建分支 a  然后自主演进 commit id
+   -----------\、 a1、a2
+   branch 在 a1 处创建分支 b  然后自主演进 commit id
+   ---------------\、b1、b2
+   
+   git switch b
+   # 进入 b 分支
+   git rebase master 
+   会变成如下
+   -- m1、m2、m3、m4、m5
+   -------------------\、b1、b2
+   -----------\、 a1、a2
+   
+   1. 以 master 为基
+   2. 从 master 最新开始
+   3. 然后重树 b 后面的 commit id
+   4. 可能会产生冲突
+   ```
 
-  ```shell
-  比如 有 master 其  commit id
-  -- m1、m2、m3、m4、m5
-  branch 在 m3 处创建分支 a  然后自主演进 commit id
-  -----------\、 a1、a2
-  branch 在 a1 处创建分支 b  然后自主演进 commit id
-  ---------------\、b1、b2
-  
-  git switch b
-  # 进入 b 分支
-  git rebase master 
-  会变成如下
-  -- m1、m2、m3、m4、m5
-  -------------------\、b1、b2
-  -----------\、 a1、a2
-  
-  1. 以 master 为基
-  2. 从 master 最新开始
-  3. 然后重树 b 后面的 commit id
-  4. 可能会产生冲突
-  ```
-
-2.  rebase 有很多参数， -i 进入交互式环境可以操作
-
+2. rebase 有很多参数， -i 进入交互式环境可以操作
+   
    在本分支。提交了很多代码，然后需要合并其他分支的代码的时候。
-
+   
    可以再次对本次提交的代码进行 多次提交的合并（这个用于当需要将本地开发分支提交到 开发主分支 dev）
    
-
    ```shell
    git rebase -i 你需要合并的基分支
    # 进入交互环境 会出现编辑框。
@@ -621,14 +651,12 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    # 保存即可，根据提示操作
    ```
 
-   
-
 #### merge 合并
 
 1. 合并
-
+   
    **主意处理冲突**
-
+   
    ```shell
    git merge  xxx
    # 合并 xx 分支 到本分支
@@ -636,9 +664,9 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    ```
 
 2. 多commit 压缩合并
-
+   
    **主意处理冲突**
-
+   
    ```shell
    git merge xxx --squash
    # 使用squash方式合并，把分支多次commit历史压缩为一次 
@@ -649,11 +677,8 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
    # 因为将合并过来的只加入了工作区和暂存区
    # 可以通过   git restore --staged .   及     git restore . 取消 
    ```
-   
-  
+
 #### cherry-pick  略，不建议使用
-
-
 
 ### 版本发布
 
@@ -669,20 +694,18 @@ reset 会消除之前的log 和 reflog ，是永恒的撤销
 ### tag
 
 1. 打tag
- ```shell
- git tag -a v0.1 -m "version 0.1 released" 1094adb
- # -a 指定标签名  可略
- # -m 指定说明文字  可略
- # 1094adb 从哪个 commitid 打tag  如果略了，就是当前最新 commit
- # 可使用 git log --oneline 查看历史 commit
- ```
+   
+   ```shell
+   git tag -a v0.1 -m "version 0.1 released" 1094adb
+   # -a 指定标签名  可略
+   # -m 指定说明文字  可略
+   # 1094adb 从哪个 commitid 打tag  如果略了，就是当前最新 commit
+   # 可使用 git log --oneline 查看历史 commit
+   ```
 
 2. 查看tag
- 
- ```shell
- git tag  # 查看所有标签
- git show v0.1  # 查看 标签信息
- 
- ```
-
-
+   
+   ```shell
+   git tag  # 查看所有标签
+   git show v0.1  # 查看 标签信息
+   ```
