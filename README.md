@@ -50,9 +50,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 ### 持续发布
 
-
-
-![gitflow.png](E:\Git\git\img\gitflow.png)
+![](img/gitflow.png)
 
 #### 核心点
 
@@ -91,8 +89,6 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 #### 三大分区区
 
-   
-
 ![gitstep.jpg](./img/gitstep.jpg)
 
 * Working Tree 当前的工作区域
@@ -107,7 +103,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 三分区对应四大状态
 
-*  untrack   新建；  `git add`命令来track它
+* untrack   新建；  `git add`命令来track它
 
 * modified  修改或者新增；通过 `git status` 查看，new file 新增，modified 修改
 
@@ -117,8 +113,6 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
   
   另外 git push 提交到远程仓库
 
-
-
 #### 重要文件
 
 * config 文件： 就是一些配置
@@ -127,7 +121,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 * logs/ 文件夹： 记录了每次的日志，`git reflog` 需要
 
-*  hooks/ 文件夹：用于在 git 命令前后做检查或做些自定义动作
+* hooks/ 文件夹：用于在 git 命令前后做检查或做些自定义动作
   
   ```textile
   prepare-commit-msg.sample  # git commit 之前，编辑器启动之前触发，传入 COMMIT_FILE，COMMIT_SOURCE，SHA1
@@ -147,7 +141,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 * objects/ 文件夹:  Git的数据库
   
-  1.  pack 文件夹：  里面有  .pack 存储的自定义 `packfile` 的二进制格式，zlib压缩的文件数据   .idx 是索引文件。
+  1. pack 文件夹：  里面有  .pack 存储的自定义 `packfile` 的二进制格式，zlib压缩的文件数据   .idx 是索引文件。
   
   2. 很多两位字符的文件：对象的SHA1哈希值的前两位是文件夹名称，后38位作为对象文件名
 
@@ -220,7 +214,7 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
    git remote add origin https://github.com/xiaocanyun/pangu.git # 添加某远程仓库
    可使用 git push/pull/fetch  origin master 推送\拉取
    ```
-
+   
    **最多在检出使用 checkout 任何时候都不要再使用**
 
 2. 创建分支
