@@ -268,6 +268,8 @@ Gitlab flow 的最大原则叫做"上游优先"（upsteam first），即只存�
 
 commit 遵循业界优秀的范例 Angular 项目团队所使用的规范，进行简单的约定
 
+[Commits · angular/angular · GitHub](https://github.com/angular/angular/commits/main)
+
 ```
 <type>(<scope>): <subject>
 <BLANK LINE>
@@ -275,6 +277,23 @@ commit 遵循业界优秀的范例 Angular 项目团队所使用的规范，进�
 <BLANK LINE>
 <footer>
 ```
+
+```
+fix(core): improve TestBed declarations standalone error message (#45999)
+
+improve the error message developers get when adding a standalone
+component in the TestBed.configureTestingModule's declarations array,
+by making more clear the fact that this error originated from the
+TestBed call
+
+resolves #45923
+
+PR Close #45999
+```
+
+
+
+
 
 ##### 基本约束
 
@@ -290,11 +309,17 @@ commit 遵循业界优秀的范例 Angular 项目团队所使用的规范，进�
 <type>(<scope>): <subject>
 ```
 
-1.  type 必须，表明类型，如下可选
+```
+fix(): 修改新建用户注册的短信验证码长度为6
+```
+
+1. type 必须，表明类型，如下可选
    
-   *  feat： 新功能
+   * feat： 新功能
    
    * fix：修补bug
+   
+   * perf：性能优化（未新增功能、未修改bug、未修改业务）
    
    * docs：文档
    
@@ -308,15 +333,19 @@ commit 遵循业界优秀的范例 Angular 项目团队所使用的规范，进�
    
    如 type为 feat 或 fix ，则一定会出现在 git log 的 change log 中，其他的可以设置为不显示
 
-2.  scope 必须，表明范围，如下可选
+2. scope 必须，表明范围，如下可选
    
-   *  rest： web接口变动
+   * rest： web接口变动
    
    * service： 服务层变动
    
    * interface：程序接口变动
    
    * database：数据库变动
+   
+   * utils：工具的变更
+   
+   * depend：依赖变更
    
    * persistent： 持久层变动
    
@@ -335,8 +364,6 @@ commit 遵循业界优秀的范例 Angular 项目团队所使用的规范，进�
    * 不出现标点符号
    
    类似： 增加\修改\删除\新建用户注册的短信验证码长度
-
-
 
 ##### body
 
@@ -363,12 +390,15 @@ commit 遵循业界优秀的范例 Angular 项目团队所使用的规范，进�
 - 另一个
 ```
 
+##### footer   当前定义在该情况下使用
 
-
-
-##### footer  可忽略
-
-
+*  引用关闭某个 issue 或者 某个具体的问题id
+  
+  ```
+  Closes #234 #222
+  ```
+  
+  
 
 #### remote 远程分支
 
